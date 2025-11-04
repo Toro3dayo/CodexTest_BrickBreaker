@@ -29,6 +29,7 @@ const ball = {
   dx: 0,
   dy: 0,
   speed: 5,
+  powerUpActive: false,
 };
 
 const input = {
@@ -46,7 +47,38 @@ const gameState = {
   highScore: loadHighScore(),
   message: 'スタートボタンでゲーム開始！',
   animationId: null,
+  bricksBrokenSincePowerUp: 0,
+  powerUpTutorialShown: false,
+  powerUpTutorialVisibleUntil: 0,
 };
+
+function resetPowerUpProgress() {
+  gameState.bricksBrokenSincePowerUp = 0;
+  deactivatePowerUp();
+}
+
+function showPowerUpTutorial() {
+  if (gameState.powerUpTutorialShown) {
+    return;
+  }
+
+  gameState.powerUpTutorialShown = true;
+  gameState.powerUpTutorialVisibleUntil = performance.now() + 10000;
+}
+
+function activatePowerUp() {
+  ball.powerUpActive = true;
+  gameState.bricksBrokenSincePowerUp = 0;
+  showPowerUpTutorial();
+}
+
+function deactivatePowerUp() {
+  if (!ball.powerUpActive) {
+    return;
+  }
+
+  ball.powerUpActive = false;
+}
 
 function loadHighScore() {
   try {
@@ -179,6 +211,7 @@ function prepareLevel({ announce = true, message } = {}) {
   setBallSpeedForLevel();
   buildBricksForLevel(gameState.level);
   placeBallAbovePaddle();
+  resetPowerUpProgress();
   if (announce) {
     setStatus(
       'ready',
@@ -230,6 +263,7 @@ function handleLifeLost() {
 
   gameState.lives -= 1;
   updateHud();
+  resetPowerUpProgress();
 
   if (gameState.lives > 0) {
     setStatus('ready', `残りライフ ${gameState.lives}！スペースキーまたはボタンで再開`);
@@ -256,6 +290,7 @@ function handleLevelClear() {
   }
 
   updateHud();
+  resetPowerUpProgress();
   prepareLevel({
     message: gainedLife
       ? `レベル${gameState.level} スタート準備完了！ライフが1つ増えました`
@@ -284,6 +319,7 @@ function moveBall() {
   if (ball.y - ball.radius < 0) {
     ball.dy = -ball.dy;
     ball.y = ball.radius;
+    deactivatePowerUp();
   }
 
   const hitsPaddleVertically =
@@ -305,6 +341,7 @@ function moveBall() {
 }
 
 function checkBrickCollisions() {
+  let destroyedAny = false;
   for (const brick of bricks) {
     if (brick.status <= 0) {
       continue;
@@ -326,19 +363,33 @@ function checkBrickCollisions() {
     const overlapBottom = brick.y + brick.height - (ball.y - ball.radius);
     const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
 
-    if (minOverlap === overlapLeft || minOverlap === overlapRight) {
-      ball.dx = -ball.dx;
-    } else {
-      ball.dy = -ball.dy;
+    if (brick.status <= 0) {
+      destroyedAny = true;
+      if (!ball.powerUpActive) {
+        gameState.bricksBrokenSincePowerUp += 1;
+        if (gameState.bricksBrokenSincePowerUp >= 5) {
+          activatePowerUp();
+        }
+      }
     }
 
-    updateBallSpeedAfterHit();
+    if (!ball.powerUpActive) {
+      if (minOverlap === overlapLeft || minOverlap === overlapRight) {
+        ball.dx = -ball.dx;
+      } else {
+        ball.dy = -ball.dy;
+      }
 
-    if (!bricks.some((b) => b.status > 0)) {
-      handleLevelClear();
+      updateBallSpeedAfterHit();
+      if (!bricks.some((b) => b.status > 0)) {
+        handleLevelClear();
+      }
+      return;
     }
+  }
 
-    return;
+  if (destroyedAny && !bricks.some((b) => b.status > 0)) {
+    handleLevelClear();
   }
 }
 
@@ -357,13 +408,37 @@ function drawPaddle() {
 }
 
 function drawBall() {
+  ctx.save();
   const gradient = ctx.createRadialGradient(ball.x, ball.y, 2, ball.x, ball.y, ball.radius + 5);
   gradient.addColorStop(0, '#f8fafc');
   gradient.addColorStop(1, '#f97316');
+
+  if (ball.powerUpActive) {
+    const pulse = 0.6 + 0.4 * Math.sin(performance.now() / 120);
+    ctx.shadowColor = 'rgba(251, 191, 36, 0.8)';
+    ctx.shadowBlur = 24 + pulse * 8;
+    ctx.fillStyle = '#fde68a';
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius + 3 + pulse * 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+    ctx.globalCompositeOperation = 'lighter';
+    const aura = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, ball.radius + 10);
+    aura.addColorStop(0, 'rgba(253, 230, 138, 0.9)');
+    aura.addColorStop(1, 'rgba(251, 146, 60, 0.1)');
+    ctx.fillStyle = aura;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius + 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
   ctx.fillStyle = gradient;
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   ctx.fill();
+  ctx.restore();
 }
 
 function drawBricks() {
@@ -441,6 +516,39 @@ function draw() {
   drawPaddle();
   drawBall();
   drawMessage();
+  drawPowerUpTutorial();
+}
+
+function drawPowerUpTutorial() {
+  if (!gameState.powerUpTutorialVisibleUntil) {
+    return;
+  }
+
+  const now = performance.now();
+  if (now > gameState.powerUpTutorialVisibleUntil) {
+    gameState.powerUpTutorialVisibleUntil = 0;
+    return;
+  }
+
+  ctx.save();
+  const remaining = gameState.powerUpTutorialVisibleUntil - now;
+  const fade = remaining < 1200 ? remaining / 1200 : 1;
+  ctx.globalAlpha = 0.8 * fade;
+  const boxWidth = 360;
+  const boxHeight = 70;
+  const boxX = BASE_WIDTH / 2 - boxWidth / 2;
+  const boxY = BASE_HEIGHT * 0.32;
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+  roundedRectPath(boxX, boxY, boxWidth, boxHeight, 18);
+  ctx.fill();
+
+  ctx.globalAlpha = fade;
+  ctx.fillStyle = '#fef3c7';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '16px "Segoe UI", sans-serif';
+  ctx.fillText('パワーアップ弾でブロックを貫通！上面に当たると解除されます。', BASE_WIDTH / 2, boxY + boxHeight / 2);
+  ctx.restore();
 }
 
 function updatePaddleFromInput() {
