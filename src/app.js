@@ -1,3 +1,5 @@
+import { hideScreen, showResultScreen, showTitleScreen } from './screenNavigation.js';
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const startButton = document.getElementById('startButton');
@@ -273,6 +275,7 @@ function handleLifeLost() {
     setStatus('gameOver', 'ゲームオーバー… スタートで再挑戦');
     resetPaddle();
     placeBallAbovePaddle();
+    presentResultScreen();
   }
 }
 
@@ -295,6 +298,33 @@ function handleLevelClear() {
     message: gainedLife
       ? `レベル${gameState.level} スタート準備完了！ライフが1つ増えました`
       : undefined,
+  });
+}
+
+function startGameFromTitle() {
+  hideScreen();
+  startNewGame();
+  launchBall();
+}
+
+function showTitleAfterReset() {
+  gameState.score = 0;
+  gameState.level = 1;
+  gameState.lives = INITIAL_LIVES;
+  prepareLevel({ announce: false });
+  setStatus('idle', 'スタートボタンでゲーム開始！');
+  updateHud();
+  draw();
+  showTitleScreen({ onStart: startGameFromTitle });
+}
+
+function presentResultScreen() {
+  showResultScreen({
+    score: gameState.score,
+    highScore: gameState.highScore,
+    onBackToTitle: () => {
+      showTitleAfterReset();
+    },
   });
 }
 
@@ -611,12 +641,14 @@ canvas.addEventListener(
 
 startButton.addEventListener('click', () => {
   if (gameState.status === 'idle') {
+    hideScreen();
     startNewGame();
     launchBall();
     return;
   }
 
   if (gameState.status === 'gameOver') {
+    hideScreen();
     startNewGame();
     launchBall();
     return;
@@ -653,9 +685,11 @@ document.addEventListener('keydown', (event) => {
     } else if (gameState.status === 'ready') {
       launchBall();
     } else if (gameState.status === 'idle') {
+      hideScreen();
       startNewGame();
       launchBall();
     } else if (gameState.status === 'gameOver') {
+      hideScreen();
       startNewGame();
       launchBall();
     }
@@ -678,8 +712,5 @@ window.addEventListener('resize', () => {
 });
 
 setupCanvas();
-prepareLevel({ announce: false });
-setStatus('idle', 'スタートボタンでゲーム開始！');
-updateHud();
-draw();
+showTitleAfterReset();
 requestAnimationFrame(gameLoop);
