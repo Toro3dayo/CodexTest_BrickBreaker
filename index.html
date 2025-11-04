@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ブロック崩し</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <main class="game-wrapper">
+      <header class="game-header">
+        <h1>ブロック崩し</h1>
+        <div class="scoreboard" aria-live="polite">
+          <div class="scoreboard__item">
+            <span class="scoreboard__label">スコア</span>
+            <span id="score" class="scoreboard__value">0</span>
+          </div>
+          <div class="scoreboard__item">
+            <span class="scoreboard__label">ハイスコア</span>
+            <span id="highScore" class="scoreboard__value">0</span>
+          </div>
+          <div class="scoreboard__item">
+            <span class="scoreboard__label">レベル</span>
+            <span id="level" class="scoreboard__value">1</span>
+          </div>
+          <div class="scoreboard__item">
+            <span class="scoreboard__label">残りライフ</span>
+            <span id="lives" class="scoreboard__value">3</span>
+          </div>
+        </div>
+      </header>
+      <section class="game-area">
+        <canvas id="gameCanvas" width="480" height="640" aria-label="ブロック崩しゲーム" role="img"></canvas>
+        <div class="controls">
+          <button id="startButton" type="button">スタート</button>
+        </div>
+      </section>
+      <section class="instructions">
+        <h2>遊び方</h2>
+        <p>
+          パドルを左右に動かし、ボールを跳ね返してブロックをすべて壊しましょう。レベルが進むほどブロック数とボールのスピードが上がります。
+        </p>
+        <ul>
+          <li>PC: マウスまたは左右キーでパドルを動かします。</li>
+          <li>スマホ / タブレット: 画面をタッチしてスライドするとパドルが動きます。</li>
+          <li>スタート / リスタートボタン、またはスペースキーでゲームを開始・再開できます。</li>
+          <li>プレイ中にスペースキーを押すと一時停止 / 再開します。</li>
+        </ul>
+      </section>
+    </main>
+    <script src="src/app.js" type="module"></script>
+  </body>
+</html>
