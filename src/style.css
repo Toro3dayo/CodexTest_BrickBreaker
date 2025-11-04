@@ -149,3 +149,78 @@ canvas {
     width: 100%;
   }
 }
+
+.screen-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.72);
+  z-index: 1000;
+}
+
+.screen-root:empty {
+  display: none;
+}
+
+.screen {
+  width: min(320px, 100%);
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 12px;
+  padding: 1.75rem 1.5rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+  display: grid;
+  gap: 1rem;
+  text-align: center;
+}
+
+.screen__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.screen__message {
+  margin: 0;
+  line-height: 1.6;
+  color: #1f2937;
+}
+
+.screen__button {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.screen__button:hover,
+.screen__button:focus-visible {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.screen__button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.screen--loading {
+  background: transparent;
+  color: #f8fafc;
+  box-shadow: none;
+  gap: 0;
+}
+
+.screen--loading .screen__message {
+  color: #f8fafc;
+  font-weight: 600;
+}
