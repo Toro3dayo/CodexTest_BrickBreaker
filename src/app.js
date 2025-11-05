@@ -15,6 +15,8 @@ const BRICK_MARGIN = 8;
 const BRICK_HEIGHT = 22;
 const INITIAL_LIVES = 3;
 const STORAGE_KEY = 'blockBreakerHighScore';
+const BALL_TRAIL_MAX_POINTS = 14;
+const BALL_TRAIL_LIFETIME = 280;
 
 const paddle = {
   width: BASE_WIDTH * 0.22,
@@ -32,6 +34,7 @@ const ball = {
   dy: 0,
   speed: 5,
   powerUpActive: false,
+  trail: [],
 };
 
 const input = {
@@ -171,11 +174,16 @@ function resetPaddle() {
   paddle.speed = 8 + Math.min(gameState.level - 1, 6);
 }
 
+function clearBallTrail() {
+  ball.trail = [];
+}
+
 function placeBallAbovePaddle() {
   ball.x = paddle.x + paddle.width / 2;
   ball.y = paddle.y - ball.radius - 4;
   ball.dx = 0;
   ball.dy = 0;
+  clearBallTrail();
 }
 
 function setBallSpeedForLevel() {
@@ -337,6 +345,18 @@ function updateBallSpeedAfterHit() {
   ball.speed = target;
 }
 
+function updateBallTrail(shouldRecord) {
+  const now = performance.now();
+  ball.trail = ball.trail.filter((point) => now - point.timestamp <= BALL_TRAIL_LIFETIME);
+
+  if (shouldRecord) {
+    ball.trail.push({ x: ball.x, y: ball.y, timestamp: now });
+    if (ball.trail.length > BALL_TRAIL_MAX_POINTS) {
+      ball.trail.splice(0, ball.trail.length - BALL_TRAIL_MAX_POINTS);
+    }
+  }
+}
+
 function moveBall() {
   ball.x += ball.dx;
   ball.y += ball.dy;
@@ -435,6 +455,36 @@ function drawPaddle() {
   ctx.fillStyle = '#38bdf8';
   roundedRectPath(paddle.x, paddle.y, paddle.width, paddle.height, 8);
   ctx.fill();
+}
+
+function drawBallTrail() {
+  if (!ball.trail.length) {
+    return;
+  }
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const now = performance.now();
+
+  for (const point of ball.trail) {
+    const age = (now - point.timestamp) / BALL_TRAIL_LIFETIME;
+    const visibility = clamp(1 - age, 0, 1);
+    if (visibility <= 0) {
+      continue;
+    }
+
+    const radius = ball.radius * (0.85 + visibility * 0.9);
+    const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, radius + 6);
+    gradient.addColorStop(0, `rgba(248, 250, 252, ${0.32 * visibility})`);
+    gradient.addColorStop(1, 'rgba(249, 115, 22, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius + 6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
 }
 
 function drawBall() {
@@ -544,6 +594,7 @@ function draw() {
   drawBackground();
   drawBricks();
   drawPaddle();
+  drawBallTrail();
   drawBall();
   drawMessage();
   drawPowerUpTutorial();
@@ -601,6 +652,9 @@ function gameLoop() {
   if (gameState.status === 'running') {
     moveBall();
     checkBrickCollisions();
+    updateBallTrail(true);
+  } else {
+    updateBallTrail(false);
   }
 
   draw();
