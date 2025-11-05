@@ -72,6 +72,7 @@ function showPowerUpTutorial() {
 }
 
 function activatePowerUp() {
+  clearBallTrail();
   ball.powerUpActive = true;
   gameState.bricksBrokenSincePowerUp = 0;
   showPowerUpTutorial();
@@ -83,6 +84,7 @@ function deactivatePowerUp() {
   }
 
   ball.powerUpActive = false;
+  clearBallTrail();
 }
 
 function loadHighScore() {
@@ -349,6 +351,13 @@ function updateBallTrail(shouldRecord) {
   const now = performance.now();
   ball.trail = ball.trail.filter((point) => now - point.timestamp <= BALL_TRAIL_LIFETIME);
 
+  if (!ball.powerUpActive) {
+    if (ball.trail.length) {
+      clearBallTrail();
+    }
+    return;
+  }
+
   if (shouldRecord) {
     ball.trail.push({ x: ball.x, y: ball.y, timestamp: now });
     if (ball.trail.length > BALL_TRAIL_MAX_POINTS) {
@@ -458,7 +467,7 @@ function drawPaddle() {
 }
 
 function drawBallTrail() {
-  if (!ball.trail.length) {
+  if (!ball.powerUpActive || !ball.trail.length) {
     return;
   }
 
