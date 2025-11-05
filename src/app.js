@@ -72,6 +72,7 @@ function showPowerUpTutorial() {
 }
 
 function activatePowerUp() {
+  clearBallTrail();
   ball.powerUpActive = true;
   gameState.bricksBrokenSincePowerUp = 0;
   showPowerUpTutorial();
