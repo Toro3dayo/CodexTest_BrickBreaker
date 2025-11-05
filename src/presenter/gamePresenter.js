@@ -42,8 +42,15 @@ export class GamePresenter {
     }
 
     const canvas = this.view.getCanvas();
+    const touchControl = this.view.getTouchControl();
     if (canvas) {
       canvas.addEventListener('mousemove', this.handleMouseMove);
+    }
+
+    if (touchControl) {
+      touchControl.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+      touchControl.addEventListener('touchmove', this.handleTouchMove, { passive: false });
+    } else if (canvas) {
       canvas.addEventListener('touchstart', this.handleTouchStart, { passive: true });
       canvas.addEventListener('touchmove', this.handleTouchMove, { passive: false });
     }
