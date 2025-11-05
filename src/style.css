@@ -82,13 +82,47 @@ body {
   gap: 1rem;
 }
 
-canvas {
+.game-stage {
+  position: relative;
   width: min(100%, 480px);
+}
+
+canvas {
+  width: 100%;
   height: auto;
   background: radial-gradient(circle at top, rgba(255, 255, 255, 0.05), rgba(8, 47, 73, 0.95));
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 1rem;
   touch-action: none;
+  display: block;
+}
+
+.touch-control {
+  display: none;
+  width: min(100%, 480px);
+  margin: -0.75rem auto 0;
+  padding: 1rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.08), rgba(30, 64, 175, 0.18));
+  color: rgba(248, 250, 252, 0.82);
+  font-size: 0.95rem;
+  text-align: center;
+  letter-spacing: 0.02em;
+  touch-action: pan-x;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.touch-control:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.8);
+  outline-offset: 4px;
+}
+
+@media (pointer: coarse) {
+  .touch-control {
+    display: block;
+  }
 }
 
 .controls button {

@@ -14,6 +14,7 @@ export class GameView {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas?.getContext('2d') ?? null;
     this.startButton = document.getElementById(startButtonId);
+    this.touchControl = document.getElementById('touchControl');
     this.scoreLabel = document.getElementById(scoreId);
     this.highScoreLabel = document.getElementById(highScoreId);
     this.levelLabel = document.getElementById(levelId);
@@ -28,6 +29,10 @@ export class GameView {
 
   getStartButton() {
     return this.startButton;
+  }
+
+  getTouchControl() {
+    return this.touchControl;
   }
 
   setupCanvas(baseWidth, baseHeight) {
