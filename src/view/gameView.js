@@ -31,6 +31,20 @@ export class GameView {
     return this.startButton;
   }
 
+  setStartButtonVisibility(visible) {
+    if (!this.startButton) {
+      return;
+    }
+
+    if (visible) {
+      this.startButton.removeAttribute('hidden');
+      this.startButton.style.display = '';
+    } else {
+      this.startButton.setAttribute('hidden', '');
+      this.startButton.style.display = 'none';
+    }
+  }
+
   getTouchControl() {
     return this.touchControl;
   }

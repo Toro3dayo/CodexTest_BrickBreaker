@@ -9,6 +9,8 @@ export class GamePresenter {
     this.animationId = null;
     this.previousStatus = this.model.gameState.status;
     this.resultScreenVisible = false;
+    this.isCountdownActive = false;
+    this.countdownTimeoutId = null;
 
     this.gameLoop = this.gameLoop.bind(this);
     this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
@@ -94,6 +96,49 @@ export class GamePresenter {
       }
       this.previousStatus = status;
     }
+    this.updateStartButtonVisibility();
+  }
+
+  updateStartButtonVisibility() {
+    const status = this.model.gameState.status;
+    const shouldShow = status !== 'idle' && !this.isCountdownActive;
+    this.view.setStartButtonVisibility(shouldShow);
+  }
+
+  cancelCountdown() {
+    if (this.countdownTimeoutId !== null) {
+      window.clearTimeout(this.countdownTimeoutId);
+      this.countdownTimeoutId = null;
+    }
+    this.isCountdownActive = false;
+  }
+
+  startInitialCountdown(seconds = 3) {
+    this.cancelCountdown();
+    this.isCountdownActive = true;
+
+    let remaining = seconds;
+    const tick = () => {
+      if (!this.isCountdownActive) {
+        return;
+      }
+
+      if (remaining > 0) {
+        this.model.setStatus('ready', String(remaining));
+        this.view.render(this.model);
+        this.syncView(true);
+        remaining -= 1;
+        this.countdownTimeoutId = window.setTimeout(tick, 1000);
+      } else {
+        this.isCountdownActive = false;
+        this.countdownTimeoutId = null;
+        this.model.launchBall();
+        this.view.render(this.model);
+        this.syncView(true);
+      }
+    };
+
+    tick();
   }
 
   presentResultScreen() {
@@ -113,6 +158,7 @@ export class GamePresenter {
   }
 
   showTitleAfterReset() {
+    this.cancelCountdown();
     this.model.prepareTitleState();
     this.view.render(this.model);
     this.syncView(true);
@@ -120,10 +166,14 @@ export class GamePresenter {
   }
 
   startGameFromTitle() {
-    this.startGameFromIdle();
+    hideScreen();
+    this.resultScreenVisible = false;
+    this.model.startNewGame();
+    this.startInitialCountdown();
   }
 
   startGameFromIdle() {
+    this.cancelCountdown();
     hideScreen();
     this.resultScreenVisible = false;
     this.model.startNewGame();
@@ -135,6 +185,10 @@ export class GamePresenter {
   }
 
   handleStartButtonClick() {
+    if (this.isCountdownActive) {
+      return;
+    }
+
     const { status } = this.model.gameState;
 
     if (status === 'idle') {
@@ -174,6 +228,9 @@ export class GamePresenter {
       event.preventDefault();
     } else if (event.key === ' ') {
       event.preventDefault();
+      if (this.isCountdownActive) {
+        return;
+      }
       const { status } = this.model.gameState;
       if (status === 'running') {
         this.model.pauseGame();
