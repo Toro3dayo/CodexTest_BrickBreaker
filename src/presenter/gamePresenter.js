@@ -137,13 +137,14 @@ export class GamePresenter {
 
     this.readyPopupVisible = true;
     this.pausePopupVisible = false;
-    showReadyPopup({
+    const shown = showReadyPopup({
       message: this.model.gameState.message,
       onResume: this.resumeFromReady,
-    }).catch((error) => {
-      console.error('Failed to show ready popup', error);
-      this.readyPopupVisible = false;
     });
+
+    if (!shown) {
+      this.readyPopupVisible = false;
+    }
   }
 
   presentPausePopup() {
@@ -153,13 +154,14 @@ export class GamePresenter {
 
     this.pausePopupVisible = true;
     this.readyPopupVisible = false;
-    showPausePopup({
+    const shown = showPausePopup({
       message: this.model.gameState.message,
       onResume: this.resumeFromPause,
-    }).catch((error) => {
-      console.error('Failed to show pause popup', error);
-      this.pausePopupVisible = false;
     });
+
+    if (!shown) {
+      this.pausePopupVisible = false;
+    }
   }
 
   resumeFromReady() {

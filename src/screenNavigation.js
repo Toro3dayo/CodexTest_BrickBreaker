@@ -1,3 +1,6 @@
+import { createPausePopup } from './screens/pausePopup.js';
+import { createReadyPopup } from './screens/readyPopup.js';
+
 const screenRoot = document.getElementById('screen-root');
 
 let activeTransitionId = 0;
@@ -45,27 +48,29 @@ function renderErrorMessage() {
 
 function renderScreen(screen) {
   if (!screenRoot) {
-    return;
+    return false;
   }
   clearCurrentScreen();
   screenRoot.appendChild(screen.element);
   cleanupCurrentScreen = screen.cleanup ?? null;
+  return true;
 }
 
 function showImmediateScreen(createScreen) {
   if (!screenRoot) {
-    return;
+    return false;
   }
 
   activeTransitionId += 1;
   try {
     const screen = createScreen();
     if (!screen || typeof screen !== 'object') {
-      return;
+      return false;
     }
-    renderScreen(screen);
+    return renderScreen(screen);
   } catch (error) {
     console.error('Failed to render screen', error);
+    return false;
   }
 }
 
@@ -114,22 +119,12 @@ async function showResultScreen(options = {}) {
   });
 }
 
-async function showReadyPopup(options = {}) {
-  try {
-    const module = await import('./screens/readyPopup.js');
-    showImmediateScreen(() => module.createReadyPopup(options));
-  } catch (error) {
-    console.error('Failed to show ready popup', error);
-  }
+function showReadyPopup(options = {}) {
+  return showImmediateScreen(() => createReadyPopup(options));
 }
 
-async function showPausePopup(options = {}) {
-  try {
-    const module = await import('./screens/pausePopup.js');
-    showImmediateScreen(() => module.createPausePopup(options));
-  } catch (error) {
-    console.error('Failed to show pause popup', error);
-  }
+function showPausePopup(options = {}) {
+  return showImmediateScreen(() => createPausePopup(options));
 }
 
 export { hideScreen, showPausePopup, showReadyPopup, showResultScreen, showTitleScreen };
