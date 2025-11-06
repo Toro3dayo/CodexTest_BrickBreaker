@@ -47,6 +47,39 @@ body {
   letter-spacing: 0.05em;
 }
 
+.game-header__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.game-header__how-to-button {
+  border: none;
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.92), rgba(249, 115, 22, 0.92));
+  color: #fff7ed;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(249, 115, 22, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.game-header__how-to-button:hover,
+.game-header__how-to-button:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 28px rgba(249, 115, 22, 0.34);
+  outline: none;
+}
+
+.game-header__how-to-button:focus-visible {
+  outline: 2px solid rgba(254, 215, 170, 0.9);
+  outline-offset: 2px;
+}
+
 .scoreboard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -85,6 +118,47 @@ body {
 .game-stage {
   position: relative;
   width: min(100%, 480px);
+}
+
+.game-stage__pause-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.72);
+  color: #f8fafc;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.28);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.game-stage__pause-button.is-visible {
+  display: inline-flex;
+}
+
+.game-stage__pause-button:hover,
+.game-stage__pause-button:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(30, 41, 59, 0.82);
+  outline: none;
+}
+
+.game-stage__pause-button:focus-visible {
+  outline: 2px solid rgba(148, 163, 184, 0.65);
+  outline-offset: 2px;
+}
+
+.game-stage__pause-button:active {
+  transform: translateY(1px);
 }
 
 canvas {
@@ -126,28 +200,6 @@ canvas {
   }
 }
 
-.instructions {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  line-height: 1.7;
-}
-
-.instructions h2 {
-  margin-top: 0;
-  font-size: clamp(1.25rem, 3vw, 1.75rem);
-}
-
-.instructions ul {
-  margin: 0;
-  padding-left: 1.1rem;
-}
-
-.instructions li + li {
-  margin-top: 0.25rem;
-}
-
 @media (max-width: 600px) {
   body {
     padding: 1rem;
@@ -160,6 +212,22 @@ canvas {
   .game-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .game-header__aside {
+    align-items: stretch;
+  }
+
+  .game-header__how-to-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .game-stage__pause-button {
+    top: 12px;
+    right: 12px;
+    width: 52px;
+    height: 52px;
   }
 
 .screen-root {
@@ -225,6 +293,22 @@ canvas {
   transform: none;
 }
 
+.screen__body {
+  display: grid;
+  gap: 0.75rem;
+  text-align: left;
+  line-height: 1.7;
+}
+
+.screen__body ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.screen__body li + li {
+  margin-top: 0.35rem;
+}
+
 .screen--loading {
   background: transparent;
   color: #f8fafc;
@@ -234,5 +318,70 @@ canvas {
 
 .screen--loading .screen__message {
   color: #f8fafc;
+  font-weight: 600;
+}
+
+.howto-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(15, 23, 42, 0.72);
+  z-index: 1200;
+}
+
+.howto-overlay.is-open {
+  display: flex;
+}
+
+.screen--howto {
+  width: min(360px, 100%);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 2rem 1.75rem;
+}
+
+.howto-modal__content {
+  margin-bottom: 1rem;
+}
+
+.howto-modal__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.howto-modal__navButton {
+  border: none;
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.howto-modal__navButton:disabled {
+  background: rgba(148, 163, 184, 0.25);
+  color: rgba(30, 41, 59, 0.65);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.howto-modal__navButton:not(:disabled):hover,
+.howto-modal__navButton:not(:disabled):focus-visible {
+  background: rgba(59, 130, 246, 0.24);
+  transform: translateY(-1px);
+}
+
+.howto-modal__indicator {
+  font-size: 0.9rem;
+  color: rgba(15, 23, 42, 0.68);
+  min-width: 72px;
+  text-align: center;
   font-weight: 600;
 }

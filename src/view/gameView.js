@@ -17,6 +17,7 @@ export class GameView {
     this.highScoreLabel = document.getElementById(highScoreId);
     this.levelLabel = document.getElementById(levelId);
     this.livesLabel = document.getElementById(livesId);
+    this.pauseButton = document.getElementById('pauseButton');
     this.baseWidth = 0;
     this.baseHeight = 0;
   }
@@ -55,6 +56,32 @@ export class GameView {
     if (this.livesLabel) {
       this.livesLabel.textContent = gameState.lives;
     }
+  }
+
+  updatePauseButton(gameState) {
+    if (!this.pauseButton) {
+      return;
+    }
+
+    const shouldShow = gameState.status === 'running';
+    if (shouldShow) {
+      this.pauseButton.classList.add('is-visible');
+      this.pauseButton.disabled = false;
+    } else {
+      this.pauseButton.classList.remove('is-visible');
+      this.pauseButton.disabled = true;
+    }
+  }
+
+  bindPauseButton(onClick) {
+    if (!this.pauseButton || typeof onClick !== 'function') {
+      return () => {};
+    }
+
+    this.pauseButton.addEventListener('click', onClick);
+    return () => {
+      this.pauseButton?.removeEventListener('click', onClick);
+    };
   }
 
   toGameX(clientX) {
