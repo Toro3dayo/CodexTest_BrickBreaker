@@ -1,4 +1,10 @@
-import { hideScreen, showResultScreen, showTitleScreen } from '../screenNavigation.js';
+import {
+  hideScreen,
+  showPausePopup,
+  showReadyPopup,
+  showResultScreen,
+  showTitleScreen,
+} from '../screenNavigation.js';
 import { GameModel } from '../model/gameModel.js';
 import { GameView } from '../view/gameView.js';
 
@@ -11,15 +17,18 @@ export class GamePresenter {
     this.resultScreenVisible = false;
     this.isCountdownActive = false;
     this.countdownTimeoutId = null;
+    this.readyPopupVisible = false;
+    this.pausePopupVisible = false;
 
     this.gameLoop = this.gameLoop.bind(this);
-    this.handleStartButtonClick = this.handleStartButtonClick.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleTouchStart = this.handleTouchStart.bind(this);
     this.handleTouchMove = this.handleTouchMove.bind(this);
     this.handleResize = this.handleResize.bind(this);
+    this.resumeFromReady = this.resumeFromReady.bind(this);
+    this.resumeFromPause = this.resumeFromPause.bind(this);
   }
 
   initialize() {
@@ -38,11 +47,6 @@ export class GamePresenter {
   }
 
   registerEvents() {
-    const startButton = this.view.getStartButton();
-    if (startButton) {
-      startButton.addEventListener('click', this.handleStartButtonClick);
-    }
-
     const canvas = this.view.getCanvas();
     const touchControl = this.view.getTouchControl();
     if (canvas) {
@@ -90,19 +94,96 @@ export class GamePresenter {
     this.view.updateHud(this.model.gameState);
     const status = this.model.gameState.status;
     if (forceUpdate || status !== this.previousStatus) {
-      this.view.updateStartButtonLabel(status);
       if (status === 'gameOver' && this.previousStatus !== 'gameOver') {
         this.presentResultScreen();
+      } else if (status === 'ready') {
+        this.presentReadyPopup();
+      } else if (status === 'paused') {
+        this.presentPausePopup();
+      } else if (status === 'running' || status === 'idle') {
+        this.hidePopups();
       }
       this.previousStatus = status;
     }
-    this.updateStartButtonVisibility();
   }
 
-  updateStartButtonVisibility() {
-    const status = this.model.gameState.status;
-    const shouldShow = status !== 'idle' && !this.isCountdownActive;
-    this.view.setStartButtonVisibility(shouldShow);
+  hidePopups() {
+    if (!this.readyPopupVisible && !this.pausePopupVisible) {
+      return;
+    }
+    hideScreen();
+    this.readyPopupVisible = false;
+    this.pausePopupVisible = false;
+  }
+
+  clearOverlay({ resetResult = false } = {}) {
+    hideScreen();
+    if (resetResult) {
+      this.resultScreenVisible = false;
+    }
+    this.readyPopupVisible = false;
+    this.pausePopupVisible = false;
+  }
+
+  presentReadyPopup() {
+    if (
+      this.isCountdownActive ||
+      this.readyPopupVisible ||
+      this.model.gameState.status !== 'ready' ||
+      this.resultScreenVisible
+    ) {
+      return;
+    }
+
+    this.readyPopupVisible = true;
+    this.pausePopupVisible = false;
+    showReadyPopup({
+      message: this.model.gameState.message,
+      onResume: this.resumeFromReady,
+    }).catch((error) => {
+      console.error('Failed to show ready popup', error);
+      this.readyPopupVisible = false;
+    });
+  }
+
+  presentPausePopup() {
+    if (this.pausePopupVisible || this.model.gameState.status !== 'paused' || this.resultScreenVisible) {
+      return;
+    }
+
+    this.pausePopupVisible = true;
+    this.readyPopupVisible = false;
+    showPausePopup({
+      message: this.model.gameState.message,
+      onResume: this.resumeFromPause,
+    }).catch((error) => {
+      console.error('Failed to show pause popup', error);
+      this.pausePopupVisible = false;
+    });
+  }
+
+  resumeFromReady() {
+    if (this.isCountdownActive) {
+      return;
+    }
+
+    this.hidePopups();
+    const launched = this.model.launchBall();
+    if (launched) {
+      this.view.render(this.model);
+      this.syncView(true);
+    }
+  }
+
+  resumeFromPause() {
+    if (this.model.gameState.status !== 'paused') {
+      return;
+    }
+
+    this.hidePopups();
+    this.model.resumeGame();
+    this.view.render(this.model);
+    this.syncView(true);
   }
 
   cancelCountdown() {
@@ -146,6 +227,7 @@ export class GamePresenter {
       return;
     }
 
+    this.hidePopups();
     this.resultScreenVisible = true;
     showResultScreen({
       score: this.model.gameState.score,
@@ -159,6 +241,8 @@ export class GamePresenter {
 
   showTitleAfterReset() {
     this.cancelCountdown();
+    this.readyPopupVisible = false;
+    this.pausePopupVisible = false;
     this.model.prepareTitleState();
     this.view.render(this.model);
     this.syncView(true);
@@ -166,57 +250,9 @@ export class GamePresenter {
   }
 
   startGameFromTitle() {
-    hideScreen();
-    this.resultScreenVisible = false;
+    this.clearOverlay({ resetResult: true });
     this.model.startNewGame();
     this.startInitialCountdown();
-  }
-
-  startGameFromIdle() {
-    this.cancelCountdown();
-    hideScreen();
-    this.resultScreenVisible = false;
-    this.model.startNewGame();
-    this.view.render(this.model);
-    this.syncView(true);
-    this.model.launchBall();
-    this.view.render(this.model);
-    this.syncView(true);
-  }
-
-  handleStartButtonClick() {
-    if (this.isCountdownActive) {
-      return;
-    }
-
-    const { status } = this.model.gameState;
-
-    if (status === 'idle') {
-      this.startGameFromIdle();
-      return;
-    }
-
-    if (status === 'gameOver') {
-      this.startGameFromIdle();
-      return;
-    }
-
-    if (status === 'ready') {
-      this.model.launchBall();
-      this.syncView(true);
-      return;
-    }
-
-    if (status === 'running') {
-      this.model.pauseGame();
-      this.syncView(true);
-      return;
-    }
-
-    if (status === 'paused') {
-      this.model.resumeGame();
-      this.syncView(true);
-    }
   }
 
   handleKeyDown(event) {
@@ -236,15 +272,13 @@ export class GamePresenter {
         this.model.pauseGame();
         this.syncView(true);
       } else if (status === 'paused') {
-        this.model.resumeGame();
-        this.syncView(true);
+        this.resumeFromPause();
       } else if (status === 'ready') {
-        this.model.launchBall();
-        this.syncView(true);
+        this.resumeFromReady();
       } else if (status === 'idle') {
-        this.startGameFromIdle();
+        this.startGameFromTitle();
       } else if (status === 'gameOver') {
-        this.startGameFromIdle();
+        this.startGameFromTitle();
       }
     }
   }

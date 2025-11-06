@@ -59,7 +59,7 @@ export class GameModel {
       level: 1,
       lives: INITIAL_LIVES,
       highScore: this.loadHighScore(),
-      message: 'スタートボタンでゲーム開始！',
+      message: 'ポップアップの「ゲーム開始」でスタート！',
       bricksBrokenSincePowerUp: 0,
       powerUpTutorialShown: false,
       powerUpTutorialVisibleUntil: 0,
@@ -161,7 +161,7 @@ export class GameModel {
     if (announce) {
       this.setStatus(
         'ready',
-        message ?? `レベル${this.gameState.level} スタート準備完了！スペースキーまたはボタンで開始`,
+        message ?? `レベル${this.gameState.level} スタート準備完了！スペースキーまたは「再開」で開始`,
       );
     }
   }
@@ -190,7 +190,7 @@ export class GameModel {
 
   pauseGame() {
     if (this.gameState.status === 'running') {
-      this.setStatus('paused', '一時停止中… スペースキーまたはボタンで再開');
+      this.setStatus('paused', '一時停止中… スペースキーまたは「再開」で再開');
     }
   }
 
@@ -207,7 +207,7 @@ export class GameModel {
     this.gameState.level = 1;
     this.gameState.lives = INITIAL_LIVES;
     this.prepareLevel({ announce: false });
-    this.setStatus('idle', 'スタートボタンでゲーム開始！');
+    this.setStatus('idle', 'ポップアップの「ゲーム開始」でスタート！');
   }
 
   handleLifeLost() {
@@ -219,13 +219,13 @@ export class GameModel {
     this.resetPowerUpProgress();
 
     if (this.gameState.lives > 0) {
-      this.setStatus('ready', `残りライフ ${this.gameState.lives}！スペースキーまたはボタンで再開`);
+      this.setStatus('ready', `残りライフ ${this.gameState.lives}！スペースキーまたは「再開」で再開`);
       this.resetPaddle();
       this.placeBallAbovePaddle();
       return { lifeLost: true, gameOver: false };
     }
 
-    this.setStatus('gameOver', 'ゲームオーバー… スタートで再挑戦');
+    this.setStatus('gameOver', 'ゲームオーバー… ポップアップから再挑戦できます');
     this.resetPaddle();
     this.placeBallAbovePaddle();
     return { lifeLost: true, gameOver: true };

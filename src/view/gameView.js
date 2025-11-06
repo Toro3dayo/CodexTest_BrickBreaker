@@ -5,7 +5,6 @@ function clamp(value, min, max) {
 export class GameView {
   constructor({
     canvasId = 'gameCanvas',
-    startButtonId = 'startButton',
     scoreId = 'score',
     highScoreId = 'highScore',
     levelId = 'level',
@@ -13,7 +12,6 @@ export class GameView {
   } = {}) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas?.getContext('2d') ?? null;
-    this.startButton = document.getElementById(startButtonId);
     this.touchControl = document.getElementById('touchControl');
     this.scoreLabel = document.getElementById(scoreId);
     this.highScoreLabel = document.getElementById(highScoreId);
@@ -25,24 +23,6 @@ export class GameView {
 
   getCanvas() {
     return this.canvas;
-  }
-
-  getStartButton() {
-    return this.startButton;
-  }
-
-  setStartButtonVisibility(visible) {
-    if (!this.startButton) {
-      return;
-    }
-
-    if (visible) {
-      this.startButton.removeAttribute('hidden');
-      this.startButton.style.display = '';
-    } else {
-      this.startButton.setAttribute('hidden', '');
-      this.startButton.style.display = 'none';
-    }
   }
 
   getTouchControl() {
@@ -75,22 +55,6 @@ export class GameView {
     if (this.livesLabel) {
       this.livesLabel.textContent = gameState.lives;
     }
-  }
-
-  updateStartButtonLabel(status) {
-    if (!this.startButton) {
-      return;
-    }
-
-    let label = 'スタート';
-    if (status === 'running') {
-      label = '一時停止';
-    } else if (status === 'paused') {
-      label = '再開';
-    } else if (status === 'gameOver') {
-      label = 'リスタート';
-    }
-    this.startButton.textContent = label;
   }
 
   toGameX(clientX) {
