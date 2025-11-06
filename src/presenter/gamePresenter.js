@@ -37,6 +37,9 @@ export class GamePresenter {
     this.view.setupCanvas(BASE_WIDTH, BASE_HEIGHT);
     this.registerEvents();
     this.view.bindPauseButton(this.handlePauseButtonClick);
+    window.requestAnimationFrame(() => {
+      this.view.updateResponsiveLayout();
+    });
     this.showTitleAfterReset();
     this.startLoop();
   }
@@ -66,6 +69,9 @@ export class GamePresenter {
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
     window.addEventListener('resize', this.handleResize);
+    if (window.visualViewport && typeof window.visualViewport.addEventListener === 'function') {
+      window.visualViewport.addEventListener('resize', this.handleResize);
+    }
   }
 
   gameLoop() {
@@ -320,6 +326,7 @@ export class GamePresenter {
   }
 
   handleTouchStart(event) {
+    this.view.updateResponsiveLayout();
     if (event.touches.length > 0) {
       this.handlePointer(event.touches[0].clientX);
     }
@@ -335,6 +342,7 @@ export class GamePresenter {
   handleResize() {
     const { BASE_WIDTH, BASE_HEIGHT } = this.model.constants;
     this.view.setupCanvas(BASE_WIDTH, BASE_HEIGHT);
+    this.view.updateResponsiveLayout();
     this.view.render(this.model);
   }
 }

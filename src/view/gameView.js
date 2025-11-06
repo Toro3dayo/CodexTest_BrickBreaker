@@ -41,6 +41,77 @@ export class GameView {
     this.canvas.width = baseWidth * pixelRatio;
     this.canvas.height = baseHeight * pixelRatio;
     this.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    this.updateResponsiveLayout();
+  }
+
+  updateResponsiveLayout() {
+    if (!this.canvas) {
+      return;
+    }
+
+    const stage = this.canvas.parentElement;
+    const wrapper = stage?.closest('.game-wrapper') ?? null;
+    if (!stage || !wrapper) {
+      return;
+    }
+
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const wrapperStyles = window.getComputedStyle(wrapper);
+    const paddingTop = Number.parseFloat(wrapperStyles.paddingTop) || 0;
+    const paddingBottom = Number.parseFloat(wrapperStyles.paddingBottom) || 0;
+    const wrapperGap = Number.parseFloat(wrapperStyles.rowGap || wrapperStyles.gap) || 0;
+
+    const header = wrapper.querySelector('.game-header');
+    const headerHeight = header?.getBoundingClientRect().height ?? 0;
+
+    const gameArea = wrapper.querySelector('.game-area');
+    const gameAreaStyles = gameArea ? window.getComputedStyle(gameArea) : null;
+    const areaGap = gameAreaStyles ? Number.parseFloat(gameAreaStyles.rowGap || gameAreaStyles.gap) || 0 : 0;
+
+    let touchControlHeight = 0;
+    if (this.touchControl) {
+      const touchStyles = window.getComputedStyle(this.touchControl);
+      if (touchStyles.display !== 'none') {
+        touchControlHeight =
+          this.touchControl.offsetHeight +
+          (Number.parseFloat(touchStyles.marginTop) || 0) +
+          (Number.parseFloat(touchStyles.marginBottom) || 0);
+      }
+    }
+
+    const reservedHeight = paddingTop + paddingBottom + headerHeight + touchControlHeight + wrapperGap + areaGap;
+    const availableStageHeight = viewportHeight - reservedHeight - 16;
+
+    const baseWidth = this.baseWidth || this.canvas.width || 480;
+    const baseHeight = this.baseHeight || this.canvas.height || 640;
+    const aspectRatio = baseHeight / baseWidth;
+
+    const parentWidth = stage.parentElement?.clientWidth ?? stage.clientWidth;
+    const wrapperContentWidth = wrapper.clientWidth - (Number.parseFloat(wrapperStyles.paddingLeft) || 0) - (Number.parseFloat(wrapperStyles.paddingRight) || 0);
+    const maxWidth = Math.min(parentWidth, wrapperContentWidth, baseWidth);
+    if (!Number.isFinite(maxWidth) || maxWidth <= 0) {
+      return;
+    }
+
+    let targetWidth = maxWidth;
+    if (availableStageHeight > 0) {
+      const widthByHeight = availableStageHeight / aspectRatio;
+      targetWidth = Math.min(targetWidth, widthByHeight);
+    }
+
+    if (!Number.isFinite(targetWidth) || targetWidth <= 0) {
+      targetWidth = maxWidth;
+    }
+
+    const targetHeight = targetWidth * aspectRatio;
+    stage.style.width = `${targetWidth}px`;
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = `${targetHeight}px`;
+
+    if (this.touchControl) {
+      this.touchControl.style.maxWidth = `${targetWidth}px`;
+      this.touchControl.style.width = '100%';
+    }
   }
 
   updateHud(gameState) {
