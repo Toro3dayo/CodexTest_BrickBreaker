@@ -11,27 +11,40 @@
     <main class="game-wrapper">
       <header class="game-header">
         <h1>ブロック崩し</h1>
-        <div class="scoreboard" aria-live="polite">
-          <div class="scoreboard__item">
-            <span class="scoreboard__label">スコア</span>
-            <span id="score" class="scoreboard__value">0</span>
-          </div>
-          <div class="scoreboard__item">
-            <span class="scoreboard__label">ハイスコア</span>
-            <span id="highScore" class="scoreboard__value">0</span>
-          </div>
-          <div class="scoreboard__item">
-            <span class="scoreboard__label">レベル</span>
-            <span id="level" class="scoreboard__value">1</span>
-          </div>
-          <div class="scoreboard__item">
-            <span class="scoreboard__label">残りライフ</span>
-            <span id="lives" class="scoreboard__value">3</span>
+        <div class="game-header__aside">
+          <button id="howToPlayButton" class="game-header__how-to-button" type="button">
+            遊び方
+          </button>
+          <div class="scoreboard" aria-live="polite">
+            <div class="scoreboard__item">
+              <span class="scoreboard__label">スコア</span>
+              <span id="score" class="scoreboard__value">0</span>
+            </div>
+            <div class="scoreboard__item">
+              <span class="scoreboard__label">ハイスコア</span>
+              <span id="highScore" class="scoreboard__value">0</span>
+            </div>
+            <div class="scoreboard__item">
+              <span class="scoreboard__label">レベル</span>
+              <span id="level" class="scoreboard__value">1</span>
+            </div>
+            <div class="scoreboard__item">
+              <span class="scoreboard__label">残りライフ</span>
+              <span id="lives" class="scoreboard__value">3</span>
+            </div>
           </div>
         </div>
       </header>
       <section class="game-area">
         <div class="game-stage">
+          <button
+            id="pauseButton"
+            class="game-stage__pause-button"
+            type="button"
+            aria-label="ゲームを一時停止"
+          >
+            II
+          </button>
           <canvas id="gameCanvas" width="480" height="640" aria-label="ブロック崩しゲーム" role="img"></canvas>
         </div>
         <div
@@ -41,18 +54,6 @@
         >
           指をこのゾーンでスライドするとパドルを操作できます
         </div>
-      </section>
-      <section class="instructions">
-        <h2>遊び方</h2>
-        <p>
-          パドルを左右に動かし、ボールを跳ね返してブロックをすべて壊しましょう。レベルが進むほどブロック数とボールのスピードが上がります。
-        </p>
-        <ul>
-          <li>PC: マウスまたは左右キーでパドルを動かします。</li>
-          <li>スマホ / タブレット: 画面下部のタッチゾーンを横にスライドしてパドルを操作します。</li>
-          <li>表示されるポップアップのボタン、またはスペースキーでゲームを開始・再開できます。</li>
-          <li>プレイ中にスペースキーを押すと一時停止 / 再開します。</li>
-        </ul>
       </section>
     </main>
     <script src="src/app.js" type="module"></script>

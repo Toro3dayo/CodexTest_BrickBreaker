@@ -29,12 +29,14 @@ export class GamePresenter {
     this.handleResize = this.handleResize.bind(this);
     this.resumeFromReady = this.resumeFromReady.bind(this);
     this.resumeFromPause = this.resumeFromPause.bind(this);
+    this.handlePauseButtonClick = this.handlePauseButtonClick.bind(this);
   }
 
   initialize() {
     const { BASE_WIDTH, BASE_HEIGHT } = this.model.constants;
     this.view.setupCanvas(BASE_WIDTH, BASE_HEIGHT);
     this.registerEvents();
+    this.view.bindPauseButton(this.handlePauseButtonClick);
     this.showTitleAfterReset();
     this.startLoop();
   }
@@ -92,6 +94,7 @@ export class GamePresenter {
 
   syncView(forceUpdate = false) {
     this.view.updateHud(this.model.gameState);
+    this.view.updatePauseButton(this.model.gameState);
     const status = this.model.gameState.status;
     if (forceUpdate || status !== this.previousStatus) {
       if (status === 'gameOver' && this.previousStatus !== 'gameOver') {
@@ -292,6 +295,18 @@ export class GamePresenter {
     } else if (event.key === 'ArrowRight' || event.key === 'd') {
       this.model.setInputDirection('right', false);
       event.preventDefault();
+    }
+  }
+
+  handlePauseButtonClick() {
+    if (this.isCountdownActive) {
+      return;
+    }
+
+    const { status } = this.model.gameState;
+    if (status === 'running') {
+      this.model.pauseGame();
+      this.syncView(true);
     }
   }
 
