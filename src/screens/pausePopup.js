@@ -1,3 +1,4 @@
+import { showHowToPlayModal } from '../ui/howToPlayModal.js';
 import { PopupScreen } from './popupBase.js';
 
 class PausePopup extends PopupScreen {
@@ -8,6 +9,14 @@ class PausePopup extends PopupScreen {
       ? message
       : 'ゲームは一時停止しています。再開するには「再開」を押してください。';
     this.createMessage(content);
+    this.createButton({
+      label: '遊び方を見る',
+      className: 'screen__button screen__button--secondary',
+      onClick: () => {
+        showHowToPlayModal();
+      },
+    });
+
     this.createButton({
       label: '再開',
       onClick: typeof onResume === 'function' ? onResume : undefined,
