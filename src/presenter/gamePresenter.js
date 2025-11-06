@@ -101,6 +101,7 @@ export class GamePresenter {
   syncView(forceUpdate = false) {
     this.view.updateHud(this.model.gameState);
     this.view.updatePauseButton(this.model.gameState);
+    this.view.updateHowToPlayButton(this.model.gameState);
     const status = this.model.gameState.status;
     if (forceUpdate || status !== this.previousStatus) {
       if (status === 'gameOver' && this.previousStatus !== 'gameOver') {

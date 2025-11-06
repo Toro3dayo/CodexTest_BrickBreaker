@@ -18,6 +18,7 @@ export class GameView {
     this.levelLabel = document.getElementById(levelId);
     this.livesLabel = document.getElementById(livesId);
     this.pauseButton = document.getElementById('pauseButton');
+    this.howToPlayButton = document.getElementById('howToPlayButton');
     this.baseWidth = 0;
     this.baseHeight = 0;
   }
@@ -142,6 +143,15 @@ export class GameView {
       this.pauseButton.classList.remove('is-visible');
       this.pauseButton.disabled = true;
     }
+  }
+
+  updateHowToPlayButton(gameState) {
+    if (!this.howToPlayButton) {
+      return;
+    }
+
+    const shouldShow = gameState.status !== 'running';
+    this.howToPlayButton.toggleAttribute('hidden', !shouldShow);
   }
 
   bindPauseButton(onClick) {

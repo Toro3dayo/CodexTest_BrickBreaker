@@ -9,12 +9,18 @@
   <body>
     <div id="screen-root" class="screen-root" aria-live="polite"></div>
     <main class="game-wrapper">
+      <button
+        id="howToPlayButton"
+        class="floating-howto-button"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls="howto-modal-content"
+      >
+        遊び方
+      </button>
       <header class="game-header">
         <div class="game-header__title">
           <h1>ブロック崩し</h1>
-          <button id="howToPlayButton" class="game-header__how-to-button" type="button">
-            遊び方
-          </button>
         </div>
         <div class="scoreboard" aria-live="polite">
           <div class="scoreboard__item">
