@@ -1,37 +1,20 @@
-function createTitleScreen({ onStart } = {}) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'screen';
+import { PopupScreen } from './popupBase.js';
 
-  const heading = document.createElement('h2');
-  heading.className = 'screen__title';
-  heading.textContent = 'ブロック崩し';
-
-  const description = document.createElement('p');
-  description.className = 'screen__message';
-  description.textContent = '「ゲーム開始」を押すとプレイが始まります。';
-
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'screen__button';
-  button.textContent = 'ゲーム開始';
-  if (typeof onStart === 'function') {
-    button.addEventListener('click', onStart);
-  } else {
-    button.disabled = true;
+class TitleScreen extends PopupScreen {
+  constructor({ onStart } = {}) {
+    super();
+    this.createTitle('ブロック崩し');
+    this.createMessage('「ゲーム開始」を押すとプレイが始まります。');
+    this.createButton({
+      label: 'ゲーム開始',
+      onClick: typeof onStart === 'function' ? onStart : undefined,
+    });
   }
-
-  wrapper.appendChild(heading);
-  wrapper.appendChild(description);
-  wrapper.appendChild(button);
-
-  return {
-    element: wrapper,
-    cleanup: () => {
-      if (typeof onStart === 'function') {
-        button.removeEventListener('click', onStart);
-      }
-    },
-  };
 }
 
-export { createTitleScreen };
+function createTitleScreen(options = {}) {
+  const screen = new TitleScreen(options);
+  return screen.toScreen();
+}
+
+export { TitleScreen, createTitleScreen };
