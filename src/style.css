@@ -15,12 +15,13 @@
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   background: linear-gradient(160deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
   color: var(--text);
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1.5rem;
+  padding: clamp(1rem, 4vw, 1.5rem);
 }
 
 .game-wrapper {
@@ -28,10 +29,10 @@ body {
   background: rgba(15, 23, 42, 0.75);
   border: 1px solid var(--border);
   border-radius: 1.5rem;
-  padding: clamp(1.5rem, 4vw, 2.5rem);
+  padding: clamp(1.25rem, 3.5vw, 2.5rem);
   box-shadow: 0 30px 80px rgba(2, 6, 23, 0.7);
   display: grid;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: clamp(1.25rem, 3.2vw, 2.5rem);
 }
 
 .game-header {
@@ -142,12 +143,13 @@ body {
 .game-area {
   display: grid;
   justify-items: center;
-  gap: 1rem;
+  gap: clamp(0.75rem, 2vw, 1rem);
 }
 
 .game-stage {
   position: relative;
   width: min(100%, 480px);
+  margin-inline: auto;
 }
 
 .game-stage__pause-button {
@@ -204,14 +206,14 @@ canvas {
 .touch-control {
   display: none;
   width: min(100%, 480px);
-  margin: -0.75rem auto 0;
-  padding: 1rem 1.25rem;
+  margin: -0.5rem auto 0;
+  padding: 0.85rem 1.1rem;
   box-sizing: border-box;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.35);
   background: linear-gradient(180deg, rgba(56, 189, 248, 0.08), rgba(30, 64, 175, 0.18));
   color: rgba(248, 250, 252, 0.82);
-  font-size: 0.95rem;
+  font-size: clamp(0.78rem, 2.6vw, 0.95rem);
   text-align: center;
   letter-spacing: 0.02em;
   touch-action: pan-x;
@@ -230,13 +232,32 @@ canvas {
   }
 }
 
+@media (max-width: 720px) {
+  .scoreboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    font-size: 0.82rem;
+    padding: 0.6rem 0.7rem;
+    gap: 0.5rem;
+  }
+
+  .scoreboard__label {
+    font-size: 0.7rem;
+  }
+
+  .scoreboard__value {
+    font-size: clamp(1rem, 4vw, 1.35rem);
+  }
+}
+
 @media (max-width: 600px) {
   body {
-    padding: 1rem;
+    padding: clamp(0.75rem, 3vw, 1rem);
   }
 
   .game-wrapper {
     border-radius: 1rem;
+    padding: clamp(1rem, 4vw, 1.5rem);
+    gap: clamp(1rem, 4vw, 1.5rem);
   }
 
   .game-header {
@@ -244,13 +265,11 @@ canvas {
     align-items: stretch;
   }
 
-  .game-header__aside {
-    align-items: stretch;
-  }
-
   .game-header__how-to-button {
     width: 100%;
     justify-content: center;
+    font-size: clamp(1.1rem, 4vw, 1.8rem);
+    padding: clamp(0.3rem, 1.4vw, 0.5rem) clamp(1rem, 4vw, 1.4rem);
   }
 
   .game-stage__pause-button {
@@ -259,6 +278,7 @@ canvas {
     width: 52px;
     height: 52px;
   }
+}
 
 .screen-root {
   position: fixed;
