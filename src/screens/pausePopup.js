@@ -1,6 +1,9 @@
 import { showHowToPlayModal } from '../ui/howToPlayModal.js';
 import { PopupScreen } from './popupBase.js';
 
+/**
+ * 一時停止中の案内と再開アクションを提供するポップアップ。
+ */
 class PausePopup extends PopupScreen {
   constructor({ message, onResume } = {}) {
     super();

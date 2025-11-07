@@ -1,5 +1,8 @@
 import { PopupScreen } from './popupBase.js';
 
+/**
+ * タイトル表示とゲーム開始ボタンを備えた導入画面。
+ */
 class TitleScreen extends PopupScreen {
   constructor({ onStart } = {}) {
     super();

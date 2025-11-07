@@ -1,5 +1,8 @@
 import { PopupScreen } from './popupBase.js';
 
+/**
+ * ゲーム終了後のスコアと操作を提示するリザルト画面。
+ */
 class ResultScreen extends PopupScreen {
   constructor({ score = 0, highScore = 0, onBackToTitle } = {}) {
     super();

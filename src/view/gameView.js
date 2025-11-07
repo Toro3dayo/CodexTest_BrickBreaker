@@ -2,6 +2,10 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+/**
+ * Canvas を用いた描画と HUD 更新を担当するビュー層。
+ * DOM 要素の参照を初期化し、GameModel の情報をもとに描画する。
+ */
 export class GameView {
   constructor({
     canvasId = 'gameCanvas',
@@ -30,6 +34,10 @@ export class GameView {
   getTouchControl() {
     return this.touchControl;
   }
+
+  // ==================================================
+  // レイアウト・キャンバス設定
+  // ==================================================
 
   setupCanvas(baseWidth, baseHeight) {
     if (!this.canvas || !this.ctx) {
@@ -115,6 +123,10 @@ export class GameView {
     }
   }
 
+  // ==================================================
+  // HUD と操作ボタンの更新
+  // ==================================================
+
   updateHud(gameState) {
     if (this.scoreLabel) {
       this.scoreLabel.textContent = gameState.score;
@@ -174,6 +186,10 @@ export class GameView {
     const scale = this.baseWidth / rect.width;
     return (clientX - rect.left) * scale;
   }
+
+  // ==================================================
+  // 描画処理
+  // ==================================================
 
   render(model) {
     if (!this.ctx) {

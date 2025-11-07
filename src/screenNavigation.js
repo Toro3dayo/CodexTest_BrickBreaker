@@ -1,6 +1,10 @@
 import { createPausePopup } from './screens/pausePopup.js';
 import { createReadyPopup } from './screens/readyPopup.js';
 
+/**
+ * 画面表示の遷移とポップアップ生成を一元的に扱うモジュール。
+ * スクリーンの差し替えやローディング表示、例外時のフォールバックを担う。
+ */
 const screenRoot = document.getElementById('screen-root');
 
 let activeTransitionId = 0;
