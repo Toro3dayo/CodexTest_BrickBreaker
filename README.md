@@ -2,6 +2,9 @@
 
 ![ゲームプレイのイメージ](docs/images/gameplay.svg)
 
+## ここから遊べるよ
+- [Brick Break](https://toro3dayo.github.io/CodexTest_BrickBreaker/)：リポジトリをクローンした後、ブラウザで `index.html` を開いてください。
+
 ## 概要
 CodexTest Brick Breaker は、クラシックなブロック崩しをベースにしたブラウザゲームです。ボールを落とさないようにパドルを操作し、画面上部に並ぶレンガをすべて破壊するとステージクリアとなります。短時間で遊べるアーケードスタイルのゲームなので、ちょっとした息抜きや反射神経のトレーニングにも最適です。
 
@@ -20,12 +23,7 @@ CodexTest Brick Breaker は、クラシックなブロック崩しをベース�
 - **マウス**：マウスカーソルを左右に動かすかドラッグしてパドルを操作
 - **タッチデバイス**：画面下部を左右にスワイプしてパドルを操作
 
-## ここから遊べるよ
-- [ここから遊べるよ（ローカル環境）](https://toro3dayo.github.io/CodexTest_BrickBreaker/))：リポジトリをクローンした後、ブラウザで `index.html` を開いてください。
-
 ## 開発者向けメモ
 - エントリーポイント：`index.html`
 - ゲームロジック：`src` ディレクトリ配下（`src/app.js`、`src/presenter/`、`src/view/` など）
 - スタイル：`src/style.css`
-
-ブラウザのみで動作するため、特別なビルド手順は不要です。`index.html` をブラウザで開くだけですぐにデバッグを始められます。
