@@ -21,7 +21,7 @@ CodexTest Brick Breaker は、クラシックなブロック崩しをベース�
 - **タッチデバイス**：画面下部を左右にスワイプしてパドルを操作
 
 ## ここから遊べるよ
-- [ここから遊べるよ（ローカル環境）](./index.html)：リポジトリをクローンした後、ブラウザで `index.html` を開いてください。
+- [ここから遊べるよ（ローカル環境）](https://toro3dayo.github.io/CodexTest_BrickBreaker/))：リポジトリをクローンした後、ブラウザで `index.html` を開いてください。
 
 ## 開発者向けメモ
 - エントリーポイント：`index.html`
