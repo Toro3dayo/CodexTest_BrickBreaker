@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#141834" />
+      <stop offset="100%" stop-color="#0b0d1f" />
+    </linearGradient>
+    <linearGradient id="brick" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f2a65a" />
+      <stop offset="100%" stop-color="#f58549" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)" rx="24" />
+  <text x="60" y="100" fill="#f6c90e" font-family="'Segoe UI', sans-serif" font-size="60" font-weight="bold">Brick Breaker</text>
+  <text x="60" y="150" fill="#ffffff" font-family="'Segoe UI', sans-serif" font-size="28">レンガを壊してスコアを伸ばそう！</text>
+  <g transform="translate(90, 190)">
+    <g fill="url(#brick)">
+      <rect x="0" y="0" width="60" height="24" rx="6"/>
+      <rect x="70" y="0" width="60" height="24" rx="6"/>
+      <rect x="140" y="0" width="60" height="24" rx="6"/>
+      <rect x="210" y="0" width="60" height="24" rx="6"/>
+      <rect x="280" y="0" width="60" height="24" rx="6"/>
+      <rect x="350" y="0" width="60" height="24" rx="6"/>
+    </g>
+    <g fill="#f28f8f" transform="translate(0, 36)">
+      <rect x="0" y="0" width="60" height="24" rx="6"/>
+      <rect x="70" y="0" width="60" height="24" rx="6"/>
+      <rect x="140" y="0" width="60" height="24" rx="6"/>
+      <rect x="210" y="0" width="60" height="24" rx="6"/>
+      <rect x="280" y="0" width="60" height="24" rx="6"/>
+      <rect x="350" y="0" width="60" height="24" rx="6"/>
+    </g>
+    <g fill="#8bc6ec" transform="translate(0, 72)">
+      <rect x="0" y="0" width="60" height="24" rx="6"/>
+      <rect x="70" y="0" width="60" height="24" rx="6"/>
+      <rect x="140" y="0" width="60" height="24" rx="6"/>
+      <rect x="210" y="0" width="60" height="24" rx="6"/>
+      <rect x="280" y="0" width="60" height="24" rx="6"/>
+      <rect x="350" y="0" width="60" height="24" rx="6"/>
+    </g>
+    <circle cx="210" cy="150" r="16" fill="#f15a80" />
+    <rect x="160" y="190" width="140" height="18" rx="9" fill="#5dade2" />
+  </g>
+  <text x="60" y="360" fill="#ffffff" font-family="'Segoe UI', sans-serif" font-size="22">左右のパドル操作と反射を読み、すべてのレンガを破壊しよう！</text>
+</svg>
