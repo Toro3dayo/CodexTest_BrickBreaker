@@ -25,6 +25,12 @@ export class GameView {
     this.howToPlayButton = document.getElementById('howToPlayButton');
     this.baseWidth = 0;
     this.baseHeight = 0;
+    this.previousHudValues = {
+      score: null,
+      highScore: null,
+      level: null,
+      lives: null,
+    };
   }
 
   getCanvas() {
@@ -80,11 +86,15 @@ export class GameView {
     let touchControlHeight = 0;
     if (this.touchControl) {
       const touchStyles = window.getComputedStyle(this.touchControl);
-      if (touchStyles.display !== 'none') {
+      const isVisible = touchStyles.display !== 'none' && touchStyles.visibility !== 'hidden';
+      if (isVisible) {
         touchControlHeight =
           this.touchControl.offsetHeight +
           (Number.parseFloat(touchStyles.marginTop) || 0) +
           (Number.parseFloat(touchStyles.marginBottom) || 0);
+        this.touchControl.removeAttribute('aria-hidden');
+      } else {
+        this.touchControl.setAttribute('aria-hidden', 'true');
       }
     }
 
@@ -128,17 +138,23 @@ export class GameView {
   // ==================================================
 
   updateHud(gameState) {
-    if (this.scoreLabel) {
-      this.scoreLabel.textContent = gameState.score;
+    const { score, highScore, level, lives } = gameState;
+
+    if (this.scoreLabel && this.previousHudValues.score !== score) {
+      this.scoreLabel.textContent = score;
+      this.previousHudValues.score = score;
     }
-    if (this.highScoreLabel) {
-      this.highScoreLabel.textContent = gameState.highScore;
+    if (this.highScoreLabel && this.previousHudValues.highScore !== highScore) {
+      this.highScoreLabel.textContent = highScore;
+      this.previousHudValues.highScore = highScore;
     }
-    if (this.levelLabel) {
-      this.levelLabel.textContent = gameState.level;
+    if (this.levelLabel && this.previousHudValues.level !== level) {
+      this.levelLabel.textContent = level;
+      this.previousHudValues.level = level;
     }
-    if (this.livesLabel) {
-      this.livesLabel.textContent = gameState.lives;
+    if (this.livesLabel && this.previousHudValues.lives !== lives) {
+      this.livesLabel.textContent = lives;
+      this.previousHudValues.lives = lives;
     }
   }
 

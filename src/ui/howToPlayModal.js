@@ -43,6 +43,7 @@ let indicatorElement = null;
 let currentPage = 0;
 let isInitialized = false;
 let beforeOpenCallback = null;
+let previouslyFocusedElement = null;
 
 function clampPage(index) {
   return Math.min(Math.max(index, 0), PAGES.length - 1);
@@ -73,6 +74,14 @@ function closeModal() {
   overlayElement.classList.remove('is-open');
   overlayElement.setAttribute('aria-hidden', 'true');
   document.removeEventListener('keydown', handleKeydown);
+
+  const focusTarget = previouslyFocusedElement;
+  previouslyFocusedElement = null;
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    window.setTimeout(() => {
+      focusTarget.focus({ preventScroll: true });
+    }, 0);
+  }
 }
 
 function handleBackgroundClick(event) {
@@ -106,6 +115,11 @@ function openModal(pageIndex = 0) {
   }
   currentPage = clampPage(pageIndex);
   updatePage();
+  const activeElement = document.activeElement;
+  previouslyFocusedElement =
+    activeElement instanceof HTMLElement && typeof activeElement.focus === 'function'
+      ? activeElement
+      : null;
   overlayElement.classList.add('is-open');
   overlayElement.setAttribute('aria-hidden', 'false');
   document.addEventListener('keydown', handleKeydown);
