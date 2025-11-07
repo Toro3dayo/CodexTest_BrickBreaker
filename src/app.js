@@ -4,4 +4,4 @@ import { setupHowToPlayModal } from './ui/howToPlayModal.js';
 const presenter = new GamePresenter();
 presenter.initialize();
 
-setupHowToPlayModal();
+setupHowToPlayModal({ onOpen: presenter.handleHowToPlayOpen });
