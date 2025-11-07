@@ -42,6 +42,7 @@ let bodyContainer = null;
 let indicatorElement = null;
 let currentPage = 0;
 let isInitialized = false;
+let beforeOpenCallback = null;
 
 function clampPage(index) {
   return Math.min(Math.max(index, 0), PAGES.length - 1);
@@ -95,6 +96,13 @@ function handleKeydown(event) {
 function openModal(pageIndex = 0) {
   if (!overlayElement) {
     return;
+  }
+  if (typeof beforeOpenCallback === 'function') {
+    try {
+      beforeOpenCallback();
+    } catch (error) {
+      console.error('Failed to run beforeOpen callback for HowToPlayModal', error);
+    }
   }
   currentPage = clampPage(pageIndex);
   updatePage();
@@ -172,8 +180,12 @@ function ensureModal() {
   isInitialized = true;
 }
 
-export function setupHowToPlayModal({ triggerId = 'howToPlayButton' } = {}) {
+export function setupHowToPlayModal({ triggerId = 'howToPlayButton', onOpen } = {}) {
   ensureModal();
+
+  if (typeof onOpen === 'function') {
+    beforeOpenCallback = onOpen;
+  }
 
   const trigger = document.getElementById(triggerId);
   if (!trigger) {

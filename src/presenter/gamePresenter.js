@@ -30,6 +30,7 @@ export class GamePresenter {
     this.resumeFromReady = this.resumeFromReady.bind(this);
     this.resumeFromPause = this.resumeFromPause.bind(this);
     this.handlePauseButtonClick = this.handlePauseButtonClick.bind(this);
+    this.handleHowToPlayOpen = this.handleHowToPlayOpen.bind(this);
   }
 
   initialize() {
@@ -194,6 +195,16 @@ export class GamePresenter {
 
     this.hidePopups();
     this.model.resumeGame();
+    this.view.render(this.model);
+    this.syncView(true);
+  }
+
+  handleHowToPlayOpen() {
+    if (this.model.gameState.status !== 'running') {
+      return;
+    }
+
+    this.model.pauseGame();
     this.view.render(this.model);
     this.syncView(true);
   }
