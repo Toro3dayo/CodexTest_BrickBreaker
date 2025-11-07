@@ -12,6 +12,11 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+/**
+ * ブロック崩しのゲーム進行を管理するドメインモデル。
+ * プレイヤーの入力や衝突判定、スコア計算などのゲームロジックを
+ * GamePresenter から呼び出しやすい形でまとめている。
+ */
 export class GameModel {
   constructor({ now = () => performance.now() } = {}) {
     this.constants = {
@@ -68,6 +73,9 @@ export class GameModel {
     this.prepareLevel({ announce: false });
   }
 
+  // ==================================================
+  // 永続化・状態更新系ユーティリティ
+  // ==================================================
   loadHighScore() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -85,6 +93,9 @@ export class GameModel {
     }
   }
 
+  // ==================================================
+  // ゲーム進行に関する状態遷移
+  // ==================================================
   setStatus(newStatus, message = null) {
     this.gameState.status = newStatus;
     if (typeof message === 'string') {
@@ -100,6 +111,9 @@ export class GameModel {
     }
   }
 
+  // --------------------------------------------------
+  // ゲームオブジェクトの再配置・リセット処理
+  // --------------------------------------------------
   resetPaddle() {
     const maxWidth = BASE_WIDTH * 0.26;
     const minWidth = BASE_WIDTH * 0.16;
@@ -280,6 +294,9 @@ export class GameModel {
     }
   }
 
+  // --------------------------------------------------
+  // ボール挙動と衝突処理
+  // --------------------------------------------------
   moveBall() {
     this.ball.x += this.ball.dx;
     this.ball.y += this.ball.dy;
@@ -374,6 +391,9 @@ export class GameModel {
     return { levelCleared: false, gainedLife: false };
   }
 
+  // ==================================================
+  // 入力とオブジェクト操作
+  // ==================================================
   updatePaddleFromInput() {
     if (this.input.left && !this.input.right) {
       this.paddle.x -= this.paddle.speed;

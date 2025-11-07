@@ -1,3 +1,7 @@
+/**
+ * ポップアップ画面を構築するための共通ユーティリティ。
+ * DOM ノードを組み立て、後片付け用のコールバックも管理する。
+ */
 class PopupScreen {
   constructor({ modifier } = {}) {
     this.element = document.createElement('div');

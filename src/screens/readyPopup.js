@@ -1,5 +1,8 @@
 import { PopupScreen } from './popupBase.js';
 
+/**
+ * ゲーム開始前のメッセージと再開ボタンを表示するポップアップ。
+ */
 class ReadyPopup extends PopupScreen {
   constructor({ message, onResume } = {}) {
     super();

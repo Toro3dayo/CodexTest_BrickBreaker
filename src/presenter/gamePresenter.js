@@ -8,6 +8,10 @@ import {
 import { GameModel } from '../model/gameModel.js';
 import { GameView } from '../view/gameView.js';
 
+/**
+ * GameModel と GameView の間を取り持つプレゼンター層。
+ * 入力イベントの橋渡しや描画更新、ポップアップ表示の制御を担う。
+ */
 export class GamePresenter {
   constructor({ model = new GameModel(), view = new GameView() } = {}) {
     this.model = model;
@@ -33,6 +37,10 @@ export class GamePresenter {
     this.handleHowToPlayOpen = this.handleHowToPlayOpen.bind(this);
   }
 
+  // ==================================================
+  // 初期化とアニメーションループ
+  // ==================================================
+
   initialize() {
     const { BASE_WIDTH, BASE_HEIGHT } = this.model.constants;
     this.view.setupCanvas(BASE_WIDTH, BASE_HEIGHT);
@@ -51,6 +59,10 @@ export class GamePresenter {
     }
     this.animationId = requestAnimationFrame(this.gameLoop);
   }
+
+  // ==================================================
+  // イベント購読
+  // ==================================================
 
   registerEvents() {
     const canvas = this.view.getCanvas();
@@ -74,6 +86,10 @@ export class GamePresenter {
       window.visualViewport.addEventListener('resize', this.handleResize);
     }
   }
+
+  // ==================================================
+  // メインループと描画同期
+  // ==================================================
 
   gameLoop() {
     this.model.updatePaddleFromInput();
@@ -117,6 +133,10 @@ export class GamePresenter {
       this.previousStatus = status;
     }
   }
+
+  // ==================================================
+  // オーバーレイ画面制御
+  // ==================================================
 
   hidePopups() {
     if (!this.readyPopupVisible && !this.pausePopupVisible) {
@@ -199,6 +219,10 @@ export class GamePresenter {
     this.syncView(true);
   }
 
+  // ==================================================
+  // カウントダウンと画面遷移補助
+  // ==================================================
+
   handleHowToPlayOpen() {
     if (this.model.gameState.status !== 'running') {
       return;
@@ -277,6 +301,10 @@ export class GamePresenter {
     this.model.startNewGame();
     this.startInitialCountdown();
   }
+
+  // ==================================================
+  // 入力ハンドラ
+  // ==================================================
 
   handleKeyDown(event) {
     if (event.key === 'ArrowLeft' || event.key === 'a') {
